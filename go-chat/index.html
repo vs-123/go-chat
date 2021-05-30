@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Go Chat</title>
+        <style>
+            body {
+                box-sizing: border-box;
+            }
+
+            * {
+                box-sizing: inherit;
+            }
+
+            ul {
+                height: 60vh;
+                border: 1px solid black;
+                overflow: auto;
+                font-size: 2em;
+            }
+
+            #chatInput {
+                width: 100%;
+                font-size: 2em;
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Go Chat</h1>
+        <ul>
+
+        </ul>
+        <input type="text" id="chatInput">
+
+        <script>
+            const chatMessages = document.querySelector("ul");
+            const chatInput    = document.querySelector("#chatInput");
+
+            const url = "ws://" + window.location.host + "/ws"; // The WebSocket's URL
+            const ws = new WebSocket(url); // Creating a new WebSocket from the URL
+
+            const username = prompt("Please enter your username"); // Asking for username
+
+            chatInput.addEventListener("keyup", e => {
+                // Adding an event listener to chatInput so that we can send a message when the enter key is released
+
+                if (e.key === "Enter") {
+                    ws.send(`[${username}]: ${chatInput.value}`)
+                }
+            })
+
+            ws.onmessage = msg => {
+                chatMessages.innerHTML += `<li>${msg.data}</li>` // Adding a list tag for each message received, since the received message will be an object, we will take the data property of the object
+                chatMessages.scrollTop = chatMessages.scrollHeight - chatMessages.clientHeight; // Scrolling to bottom of chatMessages
+            }
+        </script>
+    </body>
+</html>
